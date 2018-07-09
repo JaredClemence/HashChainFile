@@ -1,4 +1,4 @@
-#HashChainFile
+# HashChainFile
 
 A hash chain file is intended to use blockchain-like headers to link file versions in succession. 
 Each file that is altered is stored as a new hash. The file headers point to the 
@@ -10,17 +10,13 @@ previous file version. This implementation stores all files in the same director
   * The HashChainFile stores previous versions in separate files which **reduces the read time and transfer time** of current file versions.
   * The HashChainFile uses a MerkleRoot to 
 
-##File Header Hash
+## File Header Hash
 
--------------------------------
-| Field | Length | Description |
--------------------------------
-|MixedContent| N Bytes | User defined header fields. This data should be consistent across files to identify related content sets. |
---------------------------------
-|previous_hash | 32 Bytes | Hash of previous file header. |
----------------------------------
-| merkle_root | 32 Bytes | Hash at root of a merkle tree that verifies file integrity |
-----------------------------------
+| Field           | Length   | Description                                                                                               |
+|-----------------|----------|-----------------------------------------------------------------------------------------------------------|
+| [Mixed Content] | n Bytes  | User defined header fields. This data should be consistent across files to identify related content sets. |
+| previous_hash   | 32 Bytes | Hash of previous file header.                                                                             |
+| merkle_root     | 32 Bytes | Hash at root of a merkle tree that verifies file integrity.                                               |
 
 ### Defining the header fields.
 

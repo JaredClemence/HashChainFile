@@ -1,0 +1,20 @@
+{
+    "name": "jaredclemence/hash-chain-file",
+    "description": "A blockchain inspired file format.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jared R Clemence",
+            "email": "jaredclemence@gmail.com"
+        }
+    ],
+    "require": {
+        "jaredclemence/binn": "1.0"
+    },
+    "minimum-stability":"dev",
+    "autoload": {
+        "psr-4": {
+            "JRC\\HashChainFile\\": "src/"
+        }
+    }
+}

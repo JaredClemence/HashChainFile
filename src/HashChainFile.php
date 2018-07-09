@@ -4,6 +4,8 @@ namespace JRC\HashChainFile;
 
 use JRC\HashChainFile\FileComponent\Header;
 use JRC\HashChainFile\FileComponent\Body;
+use JRC\binn\BinnSpecification;
+
 /**
  * Description of HashChainFile
  *
@@ -11,9 +13,9 @@ use JRC\HashChainFile\FileComponent\Body;
  */
 class HashChainFile extends \stdClass {
     /** @var Header */
-    private $header;
+    public $header;
     /** @var Body */
-    private $body;
+    public $body;
     
     private $readonly;
     
@@ -23,7 +25,19 @@ class HashChainFile extends \stdClass {
         $this->body->$attribute = $value;
     }
     
-    public function __construct( $customHeaders ) {
+    public function __get( $attribute ){
+        $value = null;
+        if( isset( $this->body->$attribute ) ){
+            $value = $this->body->$attribute;
+        }
+        return $value;
+    }
+    
+    public function __construct( $customHeaders = null ) {
+        if( $customHeaders === null ){
+            $timestamp = \microtime( true );
+            $customHeaders = compact('timestamp');
+        }
         $this->readonly = true;
         $this->header = new Header();
         $this->body = new Body();
@@ -32,6 +46,10 @@ class HashChainFile extends \stdClass {
     
     public function getFileHeader(){
         return $this->header;
+    }
+    
+    public function getHeaderValue( $field ){
+        return $this->header->{$field};
     }
     
     public function getFileBody(){
@@ -48,6 +66,16 @@ class HashChainFile extends \stdClass {
         $this->body->disableWriteOnce();
         $this->body->disableAutomaticCloning();
         $this->readonly = false;
+    }
+    
+    public function replaceContent( Header $header, Body $body ){
+        $this->header = $header;
+        $this->body = $body;
+    }
+
+    public function getFileContent() {
+        $binnSpec = new BinnSpecification();
+        return $binnSpec->write($this);
     }
 
 }

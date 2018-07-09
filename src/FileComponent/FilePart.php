@@ -13,7 +13,7 @@ use JRC\HashChainFile\DataElement\MerkleTreeElement;
 class FilePart extends \stdClass {
 
     private $writeOnce;
-    private $userCustomData;
+    public $userCustomData;
     private $automaticCloning;
 
     public function __construct() {
@@ -21,16 +21,20 @@ class FilePart extends \stdClass {
         $this->userCustomData = new \stdClass();
         $this->automaticCloning = true;
     }
+    
+    public function __isset( $name ){
+        return isset( $this->$name ) || isset( $this->userCustomData->$name );
+    }
 
     public function __clone() {
         $this->userCustomData = clone $this->userCustomData;
     }
 
-    protected function enableWriteOnce() {
+    public function enableWriteOnce() {
         $this->writeOnce = true;
     }
 
-    protected function disableWriteOnce() {
+    public function disableWriteOnce() {
         $this->writeOnce = false;
     }
 
@@ -46,6 +50,12 @@ class FilePart extends \stdClass {
 
     public function enableAutomaticCloning() {
         $this->automaticCloning = true;
+    }
+    
+    public function readContentFromGenericObject( $object ){
+        foreach( $object as $key=>$value ){
+            $this->$key = $value;
+        }
     }
 
     /**

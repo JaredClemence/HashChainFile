@@ -19,6 +19,7 @@ class FileHeaderTest extends TestCase {
         $fileHeader->originalFirstName = "Xavier";
         $fileHeader->dateOfBirth = "2017-10-12";
         $fileHeader->dateOfVisit = "2018-07-09";
+        $fileHeader->arrayData  = [ new stdClass(), new DateTime("now") ];
         $binnSpec = new BinnSpecification();
         $binnString = $binnSpec->write( $fileHeader );
         $sha256 = hash( "sha256", $binnString, true );

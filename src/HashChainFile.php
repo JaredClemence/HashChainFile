@@ -63,8 +63,7 @@ class HashChainFile extends \stdClass {
     }
     
     public function makeWriteable(){
-        $this->body->disableWriteOnce();
-        $this->body->disableAutomaticCloning();
+        $this->body = $this->body->getWritableCopy();
         $this->readonly = false;
     }
     

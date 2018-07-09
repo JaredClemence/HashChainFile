@@ -62,10 +62,12 @@ class HashChainFileTest extends TestCase {
             "number_field"=>1
         ];
         $house = $this->makeHouse();
+        $house2 = $this->makeHouse();
         
         $file = new HashChainFile($header);
         $file->makeWriteable();
         $file->house = $house;
+        $file->allHouses = [ $house, $house2 ];
         
         return $file;
     }

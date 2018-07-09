@@ -19,7 +19,7 @@ class FilePart extends \stdClass {
     public function __construct() {
         $this->writeOnce = false;
         $this->userCustomData = new \stdClass();
-        $this->automaticCloning = true;
+        $this->enableAutomaticCloning();
     }
     
     public function __isset( $name ){
@@ -30,17 +30,18 @@ class FilePart extends \stdClass {
         $this->userCustomData = clone $this->userCustomData;
     }
 
-    public function enableWriteOnce() {
+    protected function enableWriteOnce() {
         $this->writeOnce = true;
     }
 
-    public function disableWriteOnce() {
+    protected function disableWriteOnce() {
         $this->writeOnce = false;
     }
 
     public function getWritableCopy() {
         $clone = clone $this;
         $clone->disableWriteOnce();
+        $clone->disableAutomaticCloning();
         return $clone;
     }
 
@@ -85,13 +86,13 @@ class FilePart extends \stdClass {
     }
 
     private function performAutomaticCloning($value) {
-        if (is_object($value)) {
-            $value = clone $value;
-        } else if (is_array($value)) {
+        if (is_array($value)) {
             foreach ($value as &$valueSlot) {
-                $valueSlot = $this->getUinqueValueReference($valueSlot);
+                $valueSlot = $this->getUniqueValueReference($valueSlot);
             }
             unset($valueSlot);
+        }else if (is_object($value)) {
+            $value = clone $value;
         }
         return $value;
     }

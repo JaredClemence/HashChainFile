@@ -40,7 +40,7 @@ the patient name concept presented above as an example.
     $customHeader = compact( "originalLastName", "originalFirstName", "originalDateOfBirth", "originalDateOfVisit" );
 
     //I create a new file instance.
-    $hashFile = new \JRC\HashChainFile( $customHeader );
+    $hashFile = new \JRC\HashChainFile\HashChainFile( $customHeader );
 
     //All versions of this file will contain a header with the fields "originalLastName", "originalFirstName", "originalDateOfBirth", and "originalDateOfVisit".
     //The original reference in previous_hash will be a 32 Byte string of null bytes.

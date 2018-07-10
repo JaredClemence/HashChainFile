@@ -66,17 +66,13 @@ to make things more simple.
 Note: Look at the FacadeTest.php file for examples of how the facade can be used 
 with HashChainFile instances.
 
-### Create a new file
-
-In this example, we create a file with custom headers.
-
-#### Initialize a facade
+### Initialize a facade
 
 In the examples that follow, we will use a `$facade` variable which is initialized here:
 
     $facade = new \JRC\HashChainFile\Facade();
 
-#### Initialize a new file
+### Initialize a new file
 
 Files are created as new instances, or they are read from an existing file content. To create a new file chain, 
 use the following code as a guide:
@@ -91,7 +87,7 @@ use the following code as a guide:
     $file = $facade->makeHashFile( $header );
     //new files are automatically set to be writable objects
 
-#### Reading a file from existing content
+### Reading a file from existing content
 
 The HashChainFile content is a BINN formatted object. You can use any BINN format 
 parser to unpack the file. A BINN reader will return the file as a nested stdClass object.
@@ -105,7 +101,7 @@ into an instance of a HashChainFile.
     //files are READONLY by default. To edit the file, use this method:
     $facade->makeFileWriteable( $fileInstance );
 
-#### Writing to a file
+### Writing to a file
 
 File instances automatically separate header content from body content. I use 
 magic methods to capture attributes dynamically. All attributes that you attempt to 
@@ -132,13 +128,13 @@ object instances directly.
     //The file content generated must not be altered if it is to be used.
     //Atering the file content will cause the merkle root to change, which will invalidate the file structure.
 
-#### Reading header values
+### Reading header values
 
 When you must read a header value, use the following method:
 
     $headerValue = $facade->getFileHeaderValue( $file, $attributeName );
 
-#### Get reference to previous file version
+### Get reference to previous file version
 
 Files are linked together by the hashes of their headers.
 

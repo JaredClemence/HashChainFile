@@ -73,8 +73,38 @@ class HashChainFile extends \stdClass {
     }
 
     public function getFileContent() {
+        $this->balanceHeader();
+        return $this->writeBinaryContent();
+    }
+
+    private function writeBinaryContent() {
         $binnSpec = new BinnSpecification();
         return $binnSpec->write($this);
+    }
+
+    private function balanceHeader() {
+        $bodyReference = $this->header->getMerkleRootReferenceValue();
+        $currentRoot = $this->body->getMerkleRoot();
+        if( $currentRoot != $bodyReference ){
+            $this->updatePreviousHeaderHash();
+            $this->updateMerkleRoot();
+        }
+    }
+
+    private function updatePreviousHeaderHash() {
+        $currentHash = $this->header->getHash();
+        $oldHash = $this->header->getPreviousHash();
+        $this->header->setNewPreviousHash($oldHash, $currentHash);
+    }
+
+    private function updateMerkleRoot() {
+        $root = $this->body->getMerkleRoot();
+        $oldRoot = $this->header->getMerkleRootReferenceValue();
+        $this->header->setMerkleRootReferenceValue($oldRoot, $root);
+    }
+
+    public function getHeaderHash() {
+        return $this->header->getHash();
     }
 
 }

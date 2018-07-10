@@ -75,7 +75,7 @@ class MerkleTreeElement {
 
     private function separateDataIntoLeftAndRightParts($data) {
         $length = strlen( $data );
-        $completeUnits = floor( $length / 32 );
+        $completeUnits = ceil( $length / 32 );
         if( $completeUnits %2 != 0 ){
             $completeUnits += 1;
         }

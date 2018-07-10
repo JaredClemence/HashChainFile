@@ -5,7 +5,7 @@ require_once realpath(__DIR__ . "/../autoload.php");
 use PHPUnit\Framework\TestCase;
 
 use JRC\HashChainFile\HashChainFile;
-use JRC\HashChainFile\Controller\FileManager;
+use JRC\HashChainFile\Helper\FileReader;
 
 /**
  * Description of HachChainFileTest
@@ -47,13 +47,26 @@ class HashChainFileTest extends TestCase {
         $this->assertEquals( $expectation, $valueAfterOverwrite, "The header value is not overwritten by data written to the file directly." );
     }
     
+    public function testAutomaticHeaderUpdates(){
+        $hash = $this->testFile->getHeaderHash();
+        $binnRepresentation = $this->testFile->getFileContent();
+        
+        $this->testFile->unsuccessfulWrite = "BadData";
+        
+        $newHash = $this->testFile->getHeaderHash();
+        $newBinnRepresentation = $this->testFile->getFileContent();
+        
+        $this->assertEquals( $hash, $newHash, "The header hash does not change when the file content does not change." );
+        $this->assertEquals( $binnRepresentation, $newBinnRepresentation, "The binn representation does not change when the file content does not change." );
+    }
+    
     private function generateTestFile(){
         $file = $this->makeFile();
         $binary = $file->getFileContent();
         
         $tmpDir = sys_get_temp_dir();
-        $manager = new FileManager( $tmpDir );
-        return $manager->readBinaryData( $binary );
+        $reader = new FileReader();
+        return $reader->readFileContent($binary);
     }
 
     private function makeFile() {

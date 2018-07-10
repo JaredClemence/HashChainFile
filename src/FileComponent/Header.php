@@ -23,14 +23,14 @@ class Header extends FilePart {
 
     public $previous_hash;
     public $merkle_root;
-    public $version_count;
+    public $chain_height;
 
     public function __construct() {
         parent::__construct();
         $sixteenBytes = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
         $this->previous_hash = $sixteenBytes . $sixteenBytes;
         $this->merkle_root = $sixteenBytes . $sixteenBytes;
-        $this->version_count = 0;
+        $this->chain_height = 0;
         $this->enableWriteOnce();
     }
 
@@ -51,12 +51,16 @@ class Header extends FilePart {
     public function setNewPreviousHash($oldHash, $newHash) {
         if ($this->getPreviousHash() == $oldHash) {
             $this->previous_hash = $newHash;
-            $this->incrementFileVersionHeight();
+            $this->increaseChainHeight();
         }
     }
 
-    private function incrementFileVersionHeight() {
-        $this->version_count++;
+    private function increaseChainHeight() {
+        $this->chain_height++;
+    }
+
+    public function getChainHeight() {
+        return $this->chain_height;
     }
 
 }

@@ -167,4 +167,14 @@ class HashChainFile extends \stdClass {
         return $this->lockedPreviousHashReference !== null;
     }
 
+    public function getChainHeight() {
+        return $this->header->getChainHeight();
+    }
+
+    public function isMerkleRootValid() {
+        $root = $this->header->getMerkleRootReferenceValue();
+        $bodyRoot = $this->body->getMerkleRoot();
+        return $root == $bodyRoot;
+    }
+
 }

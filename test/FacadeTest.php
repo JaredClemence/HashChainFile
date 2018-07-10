@@ -65,6 +65,8 @@ class FacadeTest extends TestCase {
         $newFileHash = $this->saveFileToDisk($file);
         $this->assertFilePointsToPreviousFile( $newFileHash, $hashReference );
         $this->assertReopenedFileHasCustomHeaderFields($file, $header );
+        $this->assertEquals( 1, $file->getChainHeight(), "The chain height should increment by one between file versions." );
+        $this->assertTrue( $file->isMerkleRootValid(), "The merkle root is valid." );
     }
     
     private function assertReopenedFileHasCustomHeaderFields($file, $header ){
@@ -230,5 +232,4 @@ class FacadeTest extends TestCase {
         $headerHash = $hashFile->getHeaderHash();
         $this->assertEquals( $hashReference, $headerHash, "The hash value matches the expected value." );
     }
-
 }

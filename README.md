@@ -57,3 +57,94 @@ that traces file history.  The file versions outside that chain (called "Uncles"
 found on the file iteration, because there are no forward pointers. To find uncles, one must identify the 
 files that are NOT referenced in a current file chain.
 
+## Facade Use
+
+To make this library easier to use, I have created a facade that makes it more intuitive.
+The classes may be used directly, but until you are familiar with the library, use the facade 
+to make things more simple.
+
+Note: Look at the FacadeTest.php file for examples of how the facade can be used 
+with HashChainFile instances.
+
+### Create a new file
+
+In this example, we create a file with custom headers.
+
+#### Initialize a facade
+
+In the examples that follow, we will use a `$facade` variable which is initialized here:
+
+    $facade = new \JRC\HashChainFile\Facade();
+
+#### Initialize a new file
+
+Files are created as new instances, or they are read from an existing file content. To create a new file chain, 
+use the following code as a guide:
+
+    $headers = [];
+    $headers["Content-Type"] = "text/html";
+    $headers["Company"] = "Pediatric Heart Center";
+    //Headers can be set to any value. They are used to make empty files unique, and once 
+    //set they cannot change.
+    //NOTE: If the header values are left empty, a timestamp value is set automatically to prevent duplication.
+
+    $file = $facade->makeHashFile( $header );
+    //new files are automatically set to be writable objects
+
+#### Reading a file from existing content
+
+The HashChainFile content is a BINN formatted object. You can use any BINN format 
+parser to unpack the file. A BINN reader will return the file as a nested stdClass object.
+
+In order to take advantage of this library, you should use the facade to pack the BINN data 
+into an instance of a HashChainFile.
+
+    //read file data into a content variable. We will use $fileContent.
+    $fileInstance = $facade->parseFileData( $fileContent );
+
+    //files are READONLY by default. To edit the file, use this method:
+    $facade->makeFileWriteable( $fileInstance );
+
+#### Writing to a file
+
+File instances automatically separate header content from body content. I use 
+magic methods to capture attributes dynamically. All attributes that you attempt to 
+define will be stored on the `body` object and kept separate from the file header.
+
+In short: You don't have to worry about writing and reading from a file instance.
+Just use the file as a stdClass object, but remember that your specific class instances 
+will be rewritten as stdClass objects in the file. All custom classes will be stripped 
+and only publicly accessible values will be written to the file.
+
+Tip: Read generic data from a file into your custom classes. When you save, write 
+from your classes into the file using generic objects. Don't use the file to store 
+object instances directly.
+
+    //data can be written to the file. All data written to the file is appended to the file body.
+    $file->content = "Some text here.";
+    $file->separatedContent = "Other text here.";
+    $file->encryptedContent = "put encrypted content here";
+    //these attributes are arbitrary, call them whatever you like.
+
+    $newHeaderHash = $facade->getFileReferenceId( $file );
+    $newFileContent = $facade->getBinaryContentForFileStorage( $file );
+    //Any change to the file content will produce a new hash reference...use the reference id to store the file for quick access.
+    //The file content generated must not be altered if it is to be used.
+    //Atering the file content will cause the merkle root to change, which will invalidate the file structure.
+
+#### Reading header values
+
+When you must read a header value, use the following method:
+
+    $headerValue = $facade->getFileHeaderValue( $file, $attributeName );
+
+#### Get reference to previous file version
+
+Files are linked together by the hashes of their headers.
+
+    $previousFileHash = $facade->readPreviousFileHash( $file );
+    $previousFileContent = ""; //load this value with the file content referenced by $previousFileHash
+    $previousFile = $facade->parseFileData( $previousFileContent );
+    $previousFileHash2 = $facade->readPreviousFileHash( $previousFile );
+    $nextFileContent2 = ""; //load the next value again.
+    //using this method, you can iterate from a current file version back through all the versions to the initial file.

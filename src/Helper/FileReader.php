@@ -17,7 +17,8 @@ class FileReader {
      * @param string $byteString
      * @return HashChainFile
      */
-    public function readFileContent( string $byteString ) : HashChainFile {$binnSpec = new BinnSpecification();
+    public function readFileContent( string $byteString ) : HashChainFile {
+        $binnSpec = new BinnSpecification();
         $rawDataContainer = $binnSpec->read($byteString);
         $file = new HashChainFile();
         $file->markFileReadFromContent();

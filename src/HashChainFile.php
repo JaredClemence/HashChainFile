@@ -37,7 +37,6 @@ class HashChainFile extends \stdClass {
     
     public function __construct( $customHeaders = null ) {
         if( $customHeaders === null ){
-            $timestamp = \microtime( true );
             $customHeaders = compact('timestamp');
         }
         $this->lockedPreviousHashReference = null;
@@ -59,10 +58,6 @@ class HashChainFile extends \stdClass {
     public function getPreviousFileReference(){
         $hash = $this->header->getPreviousHash();
         return $this->convertBinaryToReadableHex($hash);
-    }
-    
-    public function getFileBody(){
-        return $this->body;
     }
 
     public function setHeaderValues(array $customHeaders) {

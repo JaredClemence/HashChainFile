@@ -72,7 +72,7 @@ class FilePart extends \stdClass {
     public function __set($attribute, $value) {
         $attributeIsNotSet = !isset($this->userCustomData->{$attribute});
         $writeOnceIsDisabled = $this->writeOnce === false;
-        if (!isset($this->userCustomData->{$attribute}) || $this->writeOnce === false) {
+        if ( strlen( $attribute ) > 0 && (!isset($this->userCustomData->{$attribute}) || $this->writeOnce === false)) {
             $value = $this->getUniqueValueReference($value);
             $this->userCustomData->{$attribute} = $value;
         }
@@ -123,7 +123,7 @@ class FilePart extends \stdClass {
         return $merkleTree->getHash();
     }
 
-    private function getBinaryRepresentationOfSelf() {
+    public function getBinaryRepresentationOfSelf() {
         $binnSpec = new BinnSpecification();
         $binaryRepresentationOfSelf = $binnSpec->write($this);
         return $binaryRepresentationOfSelf;

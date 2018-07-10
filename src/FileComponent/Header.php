@@ -5,7 +5,17 @@ namespace JRC\HashChainFile\FileComponent;
 use \JRC\HashChainFile\FileComponent\FilePart;
 
 /**
- * Description of Header
+ * The header is a smaller part of the file structure that can be referenced for 
+ * information about file content.
+ * 
+ *   - The header is the portion that is hashed to create the file reference.
+ *   - The header contains a Merkle root that helps identify changes to the body.
+ *   - The header contains a hash of the previous file's header to verify that two blocks are related in time-sequence.
+ *   - The header contains a version count so that issues of chain length can be quickly resolved.
+ *  
+ * By making the header separate, we allow manipulations to be performed on the body later 
+ * without affecting this publicly readable component. For example, the body can be signed or encrypted separately 
+ * without affecting the header.
  *
  * @author jaredclemence
  */
@@ -13,12 +23,14 @@ class Header extends FilePart {
 
     public $previous_hash;
     public $merkle_root;
+    public $version_count;
 
     public function __construct() {
         parent::__construct();
         $sixteenBytes = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
         $this->previous_hash = $sixteenBytes . $sixteenBytes;
         $this->merkle_root = $sixteenBytes . $sixteenBytes;
+        $this->version_count = 0;
         $this->enableWriteOnce();
     }
 
@@ -39,7 +51,12 @@ class Header extends FilePart {
     public function setNewPreviousHash($oldHash, $newHash) {
         if ($this->getPreviousHash() == $oldHash) {
             $this->previous_hash = $newHash;
+            $this->incrementFileVersionHeight();
         }
+    }
+
+    private function incrementFileVersionHeight() {
+        $this->version_count++;
     }
 
 }

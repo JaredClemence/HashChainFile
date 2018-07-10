@@ -20,9 +20,11 @@ class FileReader {
     public function readFileContent( string $byteString ) : HashChainFile {$binnSpec = new BinnSpecification();
         $rawDataContainer = $binnSpec->read($byteString);
         $file = new HashChainFile();
+        $file->markFileReadFromContent();
         $header = $this->readRawDataIntoHeader( $rawDataContainer );
         $body = $this->readRawDataIntoBody( $rawDataContainer );
         $file->replaceContent($header, $body);
+        $file->makeReadOnly();
         return $file;
     }
 

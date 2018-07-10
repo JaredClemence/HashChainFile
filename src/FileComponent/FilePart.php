@@ -110,7 +110,8 @@ class FilePart extends \stdClass {
      */
     public function getHash(): string {
         $binaryRepresentationOfSelf = $this->getBinaryRepresentationOfSelf();
-        return $this->makeHash($binaryRepresentationOfSelf);
+        $hash = $this->makeHash($binaryRepresentationOfSelf);
+        return $hash;
     }
 
     /**

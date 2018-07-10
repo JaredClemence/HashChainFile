@@ -13,6 +13,22 @@ use JRC\HashChainFile\FileComponent\Header;
  * @author jaredclemence
  */
 class FileHeaderTest extends TestCase {
+    public function testHeaderBinnConversion(){
+        $header = new Header();
+        $header->{"created_by"} = "Jared Clemence";
+        $header->{"created_on"} = "2018-07-29";
+        
+        $binnSpec = new BinnSpecification();
+        $binary = $binnSpec->write($header);
+        
+        $header2 = new Header();
+        $genericObj = $binnSpec->read( $binary );
+        
+        foreach( $header as $attribute=>$value ){
+            $this->assertObjectHasAttribute( $attribute, $genericObj, "The generic object should have the attribute `$attribute`, but it appears to be missing." );
+            $this->assertEquals( $value, $genericObj->{$attribute}, "The generic object should have the same value for the attribute `$attribute`." );
+        }
+    }
     public function testHash(){
         $fileHeader = new Header();
         $fileHeader->originalLastName = "Jimenez";

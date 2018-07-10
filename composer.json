@@ -9,12 +9,15 @@
         }
     ],
     "require": {
-        "jaredclemence/binn": "1.0"
+        "jaredclemence/binn": ">=1.0-stable"
     },
     "minimum-stability":"dev",
     "autoload": {
         "psr-4": {
             "JRC\\HashChainFile\\": "src/"
         }
+    },
+    "require-dev": {
+        "fzaninotto/faker": "^1.8@dev"
     }
 }

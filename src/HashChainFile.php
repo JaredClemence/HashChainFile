@@ -18,7 +18,9 @@ class HashChainFile extends \stdClass {
     public $body;
     
     private $readonly;
-    
+    private $isInitialFileVersion;
+    private $lockedPreviousHashReference;
+
     public function __set( $attribute, $value ){
         if( $this->readonly ) return;
         
@@ -38,9 +40,11 @@ class HashChainFile extends \stdClass {
             $timestamp = \microtime( true );
             $customHeaders = compact('timestamp');
         }
-        $this->readonly = true;
+        $this->lockedPreviousHashReference = null;
         $this->header = new Header();
         $this->body = new Body();
+        $this->readonly = false;
+        $this->isInitialFileVersion = true;
         $this->setHeaderValues( $customHeaders );
     }
     
@@ -50,6 +54,11 @@ class HashChainFile extends \stdClass {
     
     public function getHeaderValue( $field ){
         return $this->header->{$field};
+    }
+    
+    public function getPreviousFileReference(){
+        $hash = $this->header->getPreviousHash();
+        return $this->convertBinaryToReadableHex($hash);
     }
     
     public function getFileBody(){
@@ -65,6 +74,14 @@ class HashChainFile extends \stdClass {
     public function makeWriteable(){
         $this->body = $this->body->getWritableCopy();
         $this->readonly = false;
+    }
+    
+    public function makeReadOnly(){
+        $this->readonly = true;
+    }
+    
+    public function markFileReadFromContent(){
+        $this->isInitialFileVersion = false;
     }
     
     public function replaceContent( Header $header, Body $body ){
@@ -94,7 +111,18 @@ class HashChainFile extends \stdClass {
     private function updatePreviousHeaderHash() {
         $currentHash = $this->header->getHash();
         $oldHash = $this->header->getPreviousHash();
-        $this->header->setNewPreviousHash($oldHash, $currentHash);
+        if( $this->canUpdatePreviousHash( $oldHash ) ){
+            //only update previous version if this is not the first version of the file
+            //and if this file has not been updated already.
+            $this->header->setNewPreviousHash($oldHash, $currentHash);
+            $this->lockedPreviousHashReference = $currentHash;
+        }
+    }
+    
+    private function getNullHash(){
+        $nullHash = "";
+        for( $i=0; $i<32; $i++ ) $nullHash .= "\x00";
+        return $nullHash;
     }
 
     private function updateMerkleRoot() {
@@ -104,7 +132,44 @@ class HashChainFile extends \stdClass {
     }
 
     public function getHeaderHash() {
-        return $this->header->getHash();
+        $this->balanceHeader();
+        $hash = $this->header->getHash();
+        return $this->convertBinaryToReadableHex( $hash );
+    }
+
+    private function convertBinaryToReadableHex($hash) {
+        $string = "";
+        $length = strlen( $hash );
+        for( $i=0;$i<$length;$i++){
+            $char = $hash[$i];
+            $value = ord( $char );
+            $hex = dechex( $value );
+            $string .= $hex;
+        }
+        return $string;
+    }
+
+    private function canUpdatePreviousHash($oldHash) {
+        $hasNullPointer = $this->hasNullPointer();
+        $isInitialVersion = $this->isInitialFileVersion;
+        $hasLockedPointer = $this->hasLockedPointer();
+        
+        $notInitialFileVersion = !$hasNullPointer || !$isInitialVersion;
+        $notLocked = $hasLockedPointer === false;
+        
+        $canUpdate = $notInitialFileVersion && $notLocked;
+        
+        return $canUpdate;
+    }
+
+    private function hasNullPointer() {
+        $nullHash = $this->getNullHash();
+        $prevPointer = $this->header->getPreviousHash();
+        return $nullHash == $prevPointer;
+    }
+
+    private function hasLockedPointer() {
+        return $this->lockedPreviousHashReference !== null;
     }
 
 }

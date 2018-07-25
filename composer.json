@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "jaredclemence/binn": ">=1.0-stable"
+        "jaredclemence/binn": "~1"
     },
     "minimum-stability":"dev",
     "autoload": {

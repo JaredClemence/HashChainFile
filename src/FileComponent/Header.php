@@ -24,6 +24,7 @@ class Header extends FilePart {
     public $previous_hash;
     public $merkle_root;
     public $chain_height;
+    public $timestamp;
 
     public function __construct() {
         parent::__construct();
@@ -46,6 +47,12 @@ class Header extends FilePart {
         if ($this->getMerkleRootReferenceValue() == $oldHash) {
             $this->merkle_root = $newHash;
         }
+    }
+    
+    public function updateTimestamp(){
+        //uses default zone
+        $date = new \DateTime("now");
+        $this->timestamp = $date->format("r");
     }
 
     public function setNewPreviousHash($oldHash, $newHash) {

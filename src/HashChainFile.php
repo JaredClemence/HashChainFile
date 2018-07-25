@@ -100,6 +100,7 @@ class HashChainFile extends \stdClass {
         if( $currentRoot != $bodyReference ){
             $this->updatePreviousHeaderHash();
             $this->updateMerkleRoot();
+            $this->updateTimestamp();
         }
     }
 
@@ -175,6 +176,19 @@ class HashChainFile extends \stdClass {
         $root = $this->header->getMerkleRootReferenceValue();
         $bodyRoot = $this->body->getMerkleRoot();
         return $root == $bodyRoot;
+    }
+
+    private function updateTimestamp() {
+        $this->header->updateTimestamp();
+    }
+    
+    public function getReadableMerkleRoot(){
+        $root = $this->header->getMerkleRoot();
+        return $this->convertBinaryToReadableHex( $root );
+    }
+    
+    public function getTimestampString(){
+        return $this->header->timestamp;
     }
 
 }

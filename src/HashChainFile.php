@@ -20,6 +20,11 @@ class HashChainFile extends \stdClass {
     private $readonly;
     private $isInitialFileVersion;
     private $lockedPreviousHashReference;
+    
+    public function __isset($name) {
+        $value = isset( $this->body->$name );
+        return $value;
+    }
 
     public function __set( $attribute, $value ){
         if( $this->readonly ) return;

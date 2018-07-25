@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use JRC\HashChainFile\HashChainFile;
 use JRC\HashChainFile\Helper\FileReader;
+use Faker\Factory;
 
 /**
  * Description of HachChainFileTest
@@ -24,6 +25,17 @@ class HashChainFileTest extends TestCase {
         $this->testFile->newField = $expectation;
         $this->assertNotEquals( $expectation, $this->testFile->newField, "The file generated from binary data is automatically set to read only status." );
         return $this->testFile;
+    }
+    
+    public function testIsSet(){
+        $faker = Factory::create();
+        for( $i = 0; $i < 5; $i++ ){
+            $key = $faker->word;
+            $value = $faker->word;
+            $this->assertFalse( isset( $this->$key ) );
+            $this->$key = $value;
+            $this->assertTrue( isset( $this->$key ) );
+        }
     }
     
     /**
